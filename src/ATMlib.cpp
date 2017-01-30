@@ -317,6 +317,9 @@ void ATM_playroutine() {
             case 21: // Note Cut OFF
               ch->arpNotes = 0;
               break;
+            case 91: // RESTART song
+              memset(channel,0,sizeof(channel));
+              break;
             case 92: // ADD tempo
               tickRate += pgm_read_byte(ch->ptr++);
               cia = 15625 / tickRate;
