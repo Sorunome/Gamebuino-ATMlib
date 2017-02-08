@@ -47,9 +47,8 @@ Contributers:
 							|						|						|
 **160…223<br/>0x9F+__t__**	| Ticks (*__t__*)		| UBYTE (8-bits)		| Delay for *[__X__ - 159]* or *[__t__]* ticks<br/>**_Note:_** delay of 0 does not exist<br/>Maximum is 64 ticks
 							|						|						|
-**224+__Y__<br/>0xE0+__Y__**			|						|						| Long delay
-                  	   		| Ticks (*__Y__*)		| VLE (8/16-bits)		| Delay for *[__Y__ + 65]* ticks<br/> **_Note:_** LONG delay starts at 1 higher
-<br/>than SHORT delay
+**224+__Y__<br/>0xE0+__Y__**|						|						| Long delay
+                  	   		| Ticks (*__Y__*)		| VLE (8/16-bits)		| Delay for *[__Y__ + 65]* ticks<br/> **_Note:_** LONG delay starts at 1 higher<br/>than SHORT delay
   					   		|						|						|
 **~~225…251~~**		  	   	|						|						| ~~RESERVED~~
   					   		|						|						|
