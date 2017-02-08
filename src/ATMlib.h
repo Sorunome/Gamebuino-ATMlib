@@ -30,12 +30,7 @@ class ATMsynth {
     // Stop playback (unloads song)
     void stop();
 
-    // mute a channel so you can play a sound
-    void mute(byte ch);
-
-    // unmute a channel after you played a sound
-    void unmute(byte ch);
-
+    void toggleMute(byte ch);
 };
 
 

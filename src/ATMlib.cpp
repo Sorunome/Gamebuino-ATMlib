@@ -56,7 +56,6 @@ struct ch_t {
   // External FX
   word freq;
   byte vol;
-  bool mute;
 
   // Volume & Frequency slide FX
   char volFreSlide;
@@ -149,15 +148,12 @@ void ATMsynth::playPause() {
   TIMSK4 = TIMSK4 ^ 0b00000100; // toggle disable/enable interrupt
 }
 
-// Mute music on a channel, so it's ready for Sound Effects
-void ATMsynth::mute(byte ch) {
-  ChannelActiveMute ^ (1 << ch );
+// Toggle mute on/off on a channel, so it can be used for sound effects
+// So you have to call it before and after the sound effect
+void ATMsynth::toggleMute(byte ch) {
+  ChannelActiveMute ^= (1 << ch );
 }
 
-// Unmute music on a channel, after having played Sound Effects
-void ATMsynth::unmute(byte ch) {
-  ChannelActiveMute | (1 << ch );
-}
 
 __attribute__((used))
 void ATM_playroutine() {
@@ -344,7 +340,7 @@ void ATM_playroutine() {
           ch->delay = cmd - 159;
         } else if (cmd == 224) {
           // 224: LONG DELAY
-          ch->delay = read_vle(&ch->ptr) + 129;
+          ch->delay = read_vle(&ch->ptr) + 65;
         } else if (cmd < 252) {
           // 225 … 251 : RESERVED
         } else if (cmd == 252 || cmd == 253) {
