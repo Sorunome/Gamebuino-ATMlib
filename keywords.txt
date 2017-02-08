@@ -8,11 +8,10 @@ Melody	KEYWORD1
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
-begin	KEYWORD2
 play	KEYWORD2
 playPause	KEYWORD2
 stop	KEYWORD2
-tempo	KEYWORD2
+toggleMute	KEYWORD2
 
 #######################################
 # Instances (KEYWORD2)
