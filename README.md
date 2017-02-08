@@ -11,9 +11,13 @@ Contributers:
 
 ### FILE/ARRAY FORMAT DESCRIPTION
 
-**Section**					| **Field**																	| **Type**								| **Description**
----							| ---																		| ----------------						| ---
-**Track table**				| <br>Track count<br/>Address track 1<br/>...<br/>Address track *__N__*		|<br>UBYTE (8-bits)<br>UWORD (16-bits)<br/>...<br/>UWORD (16-bits)	| **Number of tracks and their addresses**<br/>Number of tracks in the file/array<br/>Location in the file/array for track 1<br/>...<br/>Location in the file/array for track *__N__ (0 … 255)*
+**Section**					| **Field**					| **Type**			| **Description**
+---							| ---						| ----------------	| ---
+**Track table**				|							|					| **Number of tracks and their addresses**
+							| Track count				| UBYTE (8-bits)	| Number of tracks in the file/array
+							| Address track 1			| UWORD (16-bits)	| Location in the file/array for track 1
+							| …							| …					| …
+							| Address track *__N__*		| UWORD (16-bits)	| Location in the file/array for track *__N__ (0 … 255)*
 							|							|					|
 **Channel entry tracks**	|							|					| **For each channel, track to start with**
 							| Channel 0 track			| UBYTE (8-bits)	| Starting track index for channel 0
@@ -32,29 +36,32 @@ Contributers:
 
 ### COMMAND LIST
 
-**Command (_X_)**				| **Parameter**									| **Type**								| **Description**
----               	   			| ---											| ------------------					| ---
-**0<br/>0x00**					|												|										| Stop playing
-								|												|										|
-**1…63<br/>0x00+__X__**			| note *(__X__)*								| UBYTE (8-bits)						| Start playing note *[__X__]* where 1 is a C1.<br/>See [Frequency to Tone](./extras/frequencyToTone.md "Frequency to Tone table")<br/>**_Note:_** everytime a note is played, volume is re-triggered
-								|												|										|
-**64…159<br/>0x40…0x9F**		|												|										| Configure effects (fx)
-								| *See __fx list__*								| none/variable							| Effect is *[__X__ - 64]*
-								|												|										|
-**160…223<br/>0x9F+__t__**		| Ticks (*__t__*)								| UBYTE (8-bits)						| Delay for *[__X__ - 159]* or *[__t__]* ticks<br/>**_Note:_** delay of 0 does not exist and maximum is 64 ticks
-								|												|										|
-**224, __Y__<br/>0xE0, __Y__**	| Ticks (*__Y__*)								| VLE (8/16-bits)						| Long delay for *[__Y__ + 65]* ticks<br/> **_Note:_** LONG delay starts at 1 higher than SHORT delay
-  					   			|												|										|
-**~~225…251~~**		  	   		|												|										| ~~RESERVED~~
-  					   			|												|										|
-**252, N<br/>0xFC, N**			| Track *__N__*									| UBYTE (8-bits)						| Call/run/goto specified track<br/>Track index where *__N__* is the number of the track to go to
-  					   			|												|										|
-**253, Y, N<br/>0xFD, Y, N**	| <br/>Loop count (*__Y__*)<br/>Track  *__N__*	| <br/>UBYTE (8-bits)<br/>UBYTE (8-bits)| Repeated call/run/goto specified track<br/>Repeat *[__Y__ + 1]* times (total)<br/>Track index where *__N__* is the number of the track to go to
+**Command (_X_)**				| **Parameter**			| **Type**				| **Description**
+---               	   			| ---					| ------------------	| ---
+**0<br/>0x00**					|						|						| Stop playing
+								|						|						|
+**1…63<br/>0x00+__X__**			| note *(__X__)*		| UBYTE (8-bits)		| Start playing note *[__X__]* where 1 is a C1.<br/>See [Frequency to Tone](./extras/frequencyToTone.md "Frequency to Tone table")<br/>**_Note:_** everytime a note is played, volume is re-triggered
+								|						|						|
+**64…159<br/>0x40…0x9F**		|						|						| Configure effects (fx)
+								| *See __fx list__*		| none/variable			| Effect is *[__X__ - 64]*
+								|						|						|
+**160…223<br/>0x9F+__t__**		| Ticks (*__t__*)		| UBYTE (8-bits)		| Delay for *[__X__ - 159]* or *[__t__]* ticks<br/>**_Note:_** delay of 0 does not exist and maximum is 64 ticks
+								|						|						|
+**224, __Y__<br/>0xE0, __Y__**	| Ticks (*__Y__*)		| VLE (8/16-bits)		| Long delay for *[__Y__ + 65]* ticks<br/> **_Note:_** LONG delay starts at 1 higher than SHORT delay
+  					   			|						|						|
+**~~225…251~~**		  	   		|						|						| ~~RESERVED~~
+  					   			|						|						|
+**252, N<br/>0xFC, N**			| Track *__N__*			| UBYTE (8-bits)		| Call/run/goto specified track<br/>Track index where *__N__* is the number of the track to go to
+  					   			|						|						|
+**253, Y, N<br/>0xFD, Y, N**	|						|						| Repeated call/run/goto specified track
+                  	   			| Loop count (*__Y__*)	| UBYTE (8-bits)		| Repeat *[__Y__ + 1]* times (total)
+                  	   			| Track  *__N__*		| UBYTE (8-bits)		| Track index where *__N__* is the number of the track to go to
   					   			|						|						|
 **254<br/>0xFE**				|						|						| Return/end of track marker
 								|						|						|
-**255, L, D<br/>0xFF, L, D**	| <br/>Length (*__L__*)<br/>Data (*__D__*) 		|<br/>VLE (8/16-bits)<br/>variable		| Binary data<br/>Length in bytes of data to follow<br/>Binary data chunk (notify host application)
-
+**255, L, D<br/>0xFF, L, D**	|						|						| Binary data
+								| Length *__L__*		| VLE (8/16-bits)		| Length in bytes of data to follow
+								| Data *__D__*			| variable				| Binary data chunk (notify host application)
 
 
 ### FX LIST
