@@ -243,8 +243,9 @@ void ATM_playroutine() {
     }
   
   
-    if (ch->delay) ch->delay--;
-    else {
+    if (ch->delay) {
+    if(ch->delay != 0xFFFF) ch->delay--;
+    } else {
       do {
         byte cmd = pgm_read_byte(ch->ptr++);
         if (cmd < 64) {
@@ -345,24 +346,31 @@ void ATM_playroutine() {
           // 225 … 251 : RESERVED
         } else if (cmd == 252 || cmd == 253) {
           // 252 (253) : CALL (REPEATEDLY)
-          // Stack PUSH
-          ch->stackCounter[ch->stackIndex] = ch->counter;
-          ch->stackTrack[ch->stackIndex] = ch->track; // note 1
-          ch->counter = cmd == 252 ? 0 : pgm_read_byte(ch->ptr++);
-          ch->track = pgm_read_byte(ch->ptr++);
-          ch->stackPointer[ch->stackIndex] = ch->ptr - trackBase;
-          ch->stackIndex++;
+      byte new_counter = cmd == 252 ? 0 : pgm_read_byte(ch->ptr++);
+      byte new_track = pgm_read_byte(ch->ptr++);
+
+      if(new_track != ch->track) {
+            // Stack PUSH
+      ch->stackCounter[ch->stackIndex] = ch->counter;
+      ch->stackTrack[ch->stackIndex] = ch->track; // note 1
+      ch->stackPointer[ch->stackIndex] = ch->ptr - trackBase;
+      ch->stackIndex++;
+      ch->track = new_track;
+      }
+          
+      ch->counter = new_counter;
           ch->ptr = getTrackPointer(ch->track);
         } else if (cmd == 254) {
           // 254 : RETURN
-          if (ch->counter > 0) {
+          if (ch->counter > 0 || ch->stackIndex == 0) {
             // Repeat track
-            ch->counter--;
+            if(ch->counter) ch->counter--;
             ch->ptr = getTrackPointer(ch->track);
+      //asm volatile ("  jmp 0"); // reboot
           } else {
-            // Check stack depth
+      // Check stack depth
             if (ch->stackIndex == 0) {
-              // End-Of-File
+              // Stop the channel
               ch->delay = 0xFFFF;
             } else {
               // Stack POP
@@ -371,7 +379,7 @@ void ATM_playroutine() {
               ch->counter = ch->stackCounter[ch->stackIndex];
               ch->track = ch->stackTrack[ch->stackIndex]; // note 1
             }
-          }
+      }
         } else if (cmd == 255) {
           // 255 : EMBEDDED DATA
           ch->ptr += read_vle(&ch->ptr);
