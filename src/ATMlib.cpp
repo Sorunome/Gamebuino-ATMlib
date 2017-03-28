@@ -47,6 +47,7 @@ struct ch_t {
   byte stackCounter[7];
   byte stackTrack[7]; // note 1
   byte stackIndex;
+  byte repeatPoint;
 
   // Looping
   word delay;
@@ -162,8 +163,20 @@ void ATM_playroutine() {
   // if all channels are inactive, stop playing
   if (!(ChannelActiveMute & 0xF0))
   {
-    TIMSK4 = 0; // Disable interrupt
     memset(channel,0,sizeof(channel));
+    byte repeatSong = 0;
+    for (unsigned n = 0; n < 4; n++) {
+        repeatSong += channel[n].repeatPoint;
+    }
+    
+    if (repeatSong) {
+      for (unsigned n = 0; n < 4; n++) {
+        channel[n].ptr = getTrackPointer(channel[n].repeatPoint);
+      }
+      ChannelActiveMute = 0b11110000;
+      ch->delay = 1;
+    }
+    else TIMSK4 = 0; // Disable interrupt
   }
 
   for (unsigned n = 0; n < 4; n++) {
@@ -314,9 +327,6 @@ void ATM_playroutine() {
             case 21: // Note Cut OFF
               ch->arpNotes = 0;
               break;
-            case 91: // RESTART song
-              memset(channel,0,sizeof(channel));
-              break;
             case 92: // ADD tempo
               tickRate += pgm_read_byte(ch->ptr++);
               cia = 15625 / tickRate;
@@ -326,10 +336,9 @@ void ATM_playroutine() {
               cia = 15625 / tickRate;
               break;
             case 94: // Goto advanced
-              channel[0].track = pgm_read_byte(ch->ptr++);
-              channel[1].track = pgm_read_byte(ch->ptr++);
-              channel[2].track = pgm_read_byte(ch->ptr++);
-              channel[3].track = pgm_read_byte(ch->ptr++);
+              for (unsigned n = 0; n < 4; n++) {
+                channel[n].repeatPoint = pgm_read_byte(ch->ptr++);
+              }
               break;
             case 95: // Stop channel
               ChannelActiveMute = ChannelActiveMute ^ (1<<(n+4));
