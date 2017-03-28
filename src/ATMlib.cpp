@@ -107,7 +107,7 @@ static inline const byte *getTrackPointer(byte track) {
 void ATMsynth::play(const byte *song) {
 
   // cleanUp stuff first
-  memset(channel,0,sizeof(channel));
+  memset(channel, 0, sizeof(channel));
 
   // Initializes ATMsynth
   // Sets sample rate and tick rate
@@ -141,7 +141,7 @@ void ATMsynth::play(const byte *song) {
 // Stop playing, unload melody
 void ATMsynth::stop() {
   TIMSK4 = 0; // Disable interrupt
-  memset(channel,0,sizeof(channel));
+  memset(channel, 0, sizeof(channel));
 }
 
 // Start grinding samples or Pause playback
@@ -165,9 +165,8 @@ void ATM_playroutine() {
   {
     byte repeatSong = 0;
     for (unsigned n = 0; n < 4; n++) {
-        repeatSong += channel[n].repeatPoint;
+      repeatSong += channel[n].repeatPoint;
     }
-    Serial.println(repeatSong);
     if (repeatSong) {
       for (unsigned n = 0; n < 4; n++) {
         channel[n].ptr = getTrackPointer(channel[n].repeatPoint);
@@ -175,13 +174,14 @@ void ATM_playroutine() {
       }
       ChannelActiveMute = 0b11110000;
     }
-    else 
+    else
     {
-      memset(channel,0,sizeof(channel));
+      memset(channel, 0, sizeof(channel));
       TIMSK4 = 0; // Disable interrupt
     }
   }
 
+  // for every channel start working
   for (unsigned n = 0; n < 4; n++) {
     ch = &channel[n];
 
@@ -193,8 +193,8 @@ void ATM_playroutine() {
       }
       else ch->reCount++;
     }
-  
-  
+
+
     //Apply Glissando
     if (ch->glisConfig) {
       if (ch->glisCount >= (ch->glisConfig & 0x7F)) {
@@ -207,8 +207,8 @@ void ATM_playroutine() {
       }
       else ch->glisCount++;
     }
-  
-  
+
+
     // Apply volume/frequency slides
     if (ch->volFreSlide) {
       if (!ch->volFreCount) {
@@ -217,14 +217,14 @@ void ATM_playroutine() {
         if (!(ch->volFreConfig & 0x80)) {
           if (vf < 0) vf = 0;
           else if (ch->volFreConfig & 0x40) if (vf > 9397) vf = 9397;
-          else if (!(ch->volFreConfig & 0x40)) if (vf > 63) vf = 63;
+            else if (!(ch->volFreConfig & 0x40)) if (vf > 63) vf = 63;
         }
         (ch->volFreConfig & 0x40) ? ch->freq = vf : ch->vol = vf;
       }
       if (ch->volFreCount++ >= (ch->volFreConfig & 0x3F)) ch->volFreCount = 0;
     }
-  
-  
+
+
     // Apply Arpeggio or Note Cut
     if (ch->arpNotes && ch->note) {
       if ((ch->arpCount & 0x1F) < (ch->arpTiming & 0x1F)) ch->arpCount++;
@@ -241,15 +241,15 @@ void ATM_playroutine() {
         ch->freq = pgm_read_word(&noteTable[arpNote + ch->transConfig]);
       }
     }
-  
-  
+
+
     // Apply Tremolo or Vibrato
     if (ch->treviDepth) {
       int16_t vt = ((ch->treviConfig & 0x40) ? ch->freq : ch->vol);
       vt = (ch->treviCount & 0x80) ? (vt + ch->treviDepth) : (vt - ch->treviDepth);
       if (vt < 0) vt = 0;
       else if (ch->treviConfig & 0x40) if (vt > 9397) vt = 9397;
-      else if (!(ch->treviConfig & 0x40)) if (vt > 63) vt = 63;
+        else if (!(ch->treviConfig & 0x40)) if (vt > 63) vt = 63;
       (ch->treviConfig & 0x40) ? ch->freq = vt : ch->vol = vt;
       if ((ch->treviCount & 0x1F) < (ch->treviConfig & 0x1F)) ch->treviCount++;
       else {
@@ -257,11 +257,12 @@ void ATM_playroutine() {
         else ch->treviCount = 0x80;
       }
     }
-  
-  
+
+
     if (ch->delay) {
-    if(ch->delay != 0xFFFF) ch->delay--;
-    } else {
+      if (ch->delay != 0xFFFF) ch->delay--;
+    }
+    else {
       do {
         byte cmd = pgm_read_byte(ch->ptr++);
         if (cmd < 64) {
@@ -270,7 +271,8 @@ void ATM_playroutine() {
           ch->freq = pgm_read_word(&noteTable[ch->note]);
           ch->vol = ch->reCount;
           if (ch->arpTiming & 0x20) ch->arpCount = 0; // ARP retriggering
-        } else if (cmd < 160) {
+        }
+        else if (cmd < 160) {
           // 64 … 159 : SETUP FX
           switch (cmd - 64) {
             case 0: // Set volume
@@ -344,7 +346,7 @@ void ATM_playroutine() {
               }
               break;
             case 95: // Stop channel
-              ChannelActiveMute = ChannelActiveMute ^ (1<<(n+4));
+              ChannelActiveMute = ChannelActiveMute ^ (1 << (n + 4));
               ch->delay = 0xFFFF;
               break;
           }
@@ -358,29 +360,29 @@ void ATM_playroutine() {
           // 225 … 251 : RESERVED
         } else if (cmd == 252 || cmd == 253) {
           // 252 (253) : CALL (REPEATEDLY)
-      byte new_counter = cmd == 252 ? 0 : pgm_read_byte(ch->ptr++);
-      byte new_track = pgm_read_byte(ch->ptr++);
+          byte new_counter = cmd == 252 ? 0 : pgm_read_byte(ch->ptr++);
+          byte new_track = pgm_read_byte(ch->ptr++);
 
-      if(new_track != ch->track) {
+          if (new_track != ch->track) {
             // Stack PUSH
-      ch->stackCounter[ch->stackIndex] = ch->counter;
-      ch->stackTrack[ch->stackIndex] = ch->track; // note 1
-      ch->stackPointer[ch->stackIndex] = ch->ptr - trackBase;
-      ch->stackIndex++;
-      ch->track = new_track;
-      }
-          
-      ch->counter = new_counter;
+            ch->stackCounter[ch->stackIndex] = ch->counter;
+            ch->stackTrack[ch->stackIndex] = ch->track; // note 1
+            ch->stackPointer[ch->stackIndex] = ch->ptr - trackBase;
+            ch->stackIndex++;
+            ch->track = new_track;
+          }
+
+          ch->counter = new_counter;
           ch->ptr = getTrackPointer(ch->track);
         } else if (cmd == 254) {
           // 254 : RETURN
           if (ch->counter > 0 || ch->stackIndex == 0) {
             // Repeat track
-            if(ch->counter) ch->counter--;
+            if (ch->counter) ch->counter--;
             ch->ptr = getTrackPointer(ch->track);
-      //asm volatile ("  jmp 0"); // reboot
+            //asm volatile ("  jmp 0"); // reboot
           } else {
-      // Check stack depth
+            // Check stack depth
             if (ch->stackIndex == 0) {
               // Stop the channel
               ch->delay = 0xFFFF;
@@ -391,16 +393,16 @@ void ATM_playroutine() {
               ch->counter = ch->stackCounter[ch->stackIndex];
               ch->track = ch->stackTrack[ch->stackIndex]; // note 1
             }
-      }
+          }
         } else if (cmd == 255) {
           // 255 : EMBEDDED DATA
           ch->ptr += read_vle(&ch->ptr);
         }
       } while (ch->delay == 0);
-  
+
       ch->delay--;
     }
-  
+
     if (!(ChannelActiveMute & (1 << n))) {
       if (n == 3) {
         // Half volume, no frequency for noise channel
