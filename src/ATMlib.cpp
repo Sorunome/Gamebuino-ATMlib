@@ -163,20 +163,23 @@ void ATM_playroutine() {
   // if all channels are inactive, stop playing
   if (!(ChannelActiveMute & 0xF0))
   {
-    memset(channel,0,sizeof(channel));
     byte repeatSong = 0;
     for (unsigned n = 0; n < 4; n++) {
         repeatSong += channel[n].repeatPoint;
     }
-    
+    Serial.println(repeatSong);
     if (repeatSong) {
       for (unsigned n = 0; n < 4; n++) {
         channel[n].ptr = getTrackPointer(channel[n].repeatPoint);
+        channel[n].delay = 0;
       }
       ChannelActiveMute = 0b11110000;
-      ch->delay = 1;
     }
-    else TIMSK4 = 0; // Disable interrupt
+    else 
+    {
+      memset(channel,0,sizeof(channel));
+      TIMSK4 = 0; // Disable interrupt
+    }
   }
 
   for (unsigned n = 0; n < 4; n++) {
