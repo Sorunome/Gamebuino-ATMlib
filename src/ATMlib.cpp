@@ -160,7 +160,7 @@ __attribute__((used))
 void ATM_playroutine() {
   ch_t *ch;
 
-  // if all channels are inactive, stop playing
+  // if all channels are inactive, stop playing or check for repeat
   if (!(ChannelActiveMute & 0xF0))
   {
     byte repeatSong = 0;
