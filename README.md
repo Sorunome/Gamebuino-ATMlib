@@ -93,7 +93,7 @@ Contributers:
 |**…**						| **…**													| **…**								| **…**
 |**64+92<br/>156<br/>0x9C**	| ADD song tempo (*__X__*)								| UBYTE (8-bit)						| adds *[__X__]* to the tempo of the song.<br/>Total value should be between 0 - 127<br/>**_Note:_** the higher the tempo to more CPU it takes.
 |**64+93<br/>157<br/>0x9D**	| SET song tempo (*__X__*)								| UBYTE (8-bit)						| (re-)sets *[__X__]* as the tempo of the song.<br/>Standard is 25. Value should be between 0 - 127<br/>**_Note:_** the higher the tempo to more CPU it takes.
-|**64+94<br/>158<br/>0x9E**	| GOTO advanced<br/><br/>(*__W__*)<br/>(*__X__*)<br/>(*__Y__*)<br/>(*__Z__*)	| <br/><br/>UBYTE (8-bit)<br/>UBYTE (8-bit)<br/>UBYTE (8-bit)<br/>UBYTE (8-bit)	| **_Note:_** handy command for having an intro<br/>and a repeating song part<br/>For channel __0__ go to track __W__<br/|>For channel __1__ go to track __X__<br/>For channel __2__ go to track __Y__<br/>For channel __3__ go to track __Z__
+|**64+94<br/>158<br/>0x9E**	| GOTO advanced<br/><br/>(*__W__*)<br/>(*__X__*)<br/>(*__Y__*)<br/>(*__Z__*)	| <br/><br/>UBYTE (8-bit)<br/>UBYTE (8-bit)<br/>UBYTE (8-bit)<br/>UBYTE (8-bit)	| **_Note:_** handy command for having an intro<br/>and a repeating song part<br/>For channel __0__ go to track __W__<br/>For channel __1__ go to track __X__<br/>For channel __2__ go to track __Y__<br/>For channel __3__ go to track __Z__
 |**64+95<br/>159<br/>0x9F**	| Stop current channel									|									| channel is no longer being processed<br/>**_Note:_** if all channels have reached STOP, the song ends
 |~~TBD~~						| ~~TBD~~												| ~~TBD~~							| ~~TBD~~
 
