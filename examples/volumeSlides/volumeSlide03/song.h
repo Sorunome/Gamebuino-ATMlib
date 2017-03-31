@@ -22,7 +22,7 @@ Song music[] = {                // total song in bytes = 38
   //"Track 1"                   // ticks = 768 / bytes = 11
   0x9D, 50,                     // SET song tempo: value = 50
   0x40, 0,                      // FX: SET VOLUME: volume = 0
-  0x42, 2, 24,                  // FX: VOLUME SLIDE ON: steps = 2 / every ticks = 24
+  0x42, 2, 24,                  // FX: VOLUME SLIDE advanced: steps = 2 / every ticks = 24
   0xFD, 31, 2,                  // REPEAT: count = 32 / track = 2 (32 * 24 ticks)
   0x9F,                         // FX: STOP CURRENT CHANNEL
 

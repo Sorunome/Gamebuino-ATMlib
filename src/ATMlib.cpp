@@ -251,7 +251,7 @@ void ATM_playroutine() {
           // 0 … 63 : NOTE ON/OFF
           if (ch->note = cmd) ch->note += ch->transConfig;
           ch->freq = pgm_read_word(&noteTable[ch->note]);
-          ch->vol = ch->reCount;
+          if (!ch->volFreConfig) ch->vol = ch->reCount;
           if (ch->arpTiming & 0x20) ch->arpCount = 0; // ARP retriggering
         }
         else if (cmd < 160) {
