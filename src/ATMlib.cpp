@@ -160,29 +160,9 @@ __attribute__((used))
 void ATM_playroutine() {
   ch_t *ch;
 
-  // if all channels are inactive, stop playing or check for repeat
-  if (!(ChannelActiveMute & 0xF0))
-  {
-    byte repeatSong = 0;
-    for (unsigned n = 0; n < 4; n++) {
-      repeatSong += channel[n].repeatPoint;
-    }
-    if (repeatSong) {
-      for (unsigned n = 0; n < 4; n++) {
-        channel[n].ptr = getTrackPointer(channel[n].repeatPoint);
-        channel[n].delay = 0;
-      }
-      ChannelActiveMute = 0b11110000;
-    }
-    else
-    {
-      memset(channel, 0, sizeof(channel));
-      TIMSK4 = 0; // Disable interrupt
-    }
-  }
-
   // for every channel start working
-  for (unsigned n = 0; n < 4; n++) {
+  for (byte n = 0; n < 4; n++)
+  {
     ch = &channel[n];
 
     // Noise retriggering
@@ -226,8 +206,10 @@ void ATM_playroutine() {
 
 
     // Apply Arpeggio or Note Cut
-    if (ch->arpNotes && ch->note) {
-      if ((ch->arpCount & 0x1F) < (ch->arpTiming & 0x1F)) ch->arpCount++;
+    if (ch->arpNotes) {
+      if  (ch->note) {
+        if ((ch->arpCount & 0x1F) < (ch->arpTiming & 0x1F)) ch->arpCount++;
+      }
       else {
         if ((ch->arpCount & 0xE0) == 0x00) ch->arpCount = 0x20;
         else if ((ch->arpCount & 0xE0) == 0x20 && !(ch->arpTiming & 0x40) && (ch->arpNotes != 0xFF)) ch->arpCount = 0x40;
@@ -341,9 +323,7 @@ void ATM_playroutine() {
               cia = 15625 / tickRate;
               break;
             case 94: // Goto advanced
-              for (unsigned n = 0; n < 4; n++) {
-                channel[n].repeatPoint = pgm_read_byte(ch->ptr++);
-              }
+              for (byte i = 0; i < 4; i++) channel[i].repeatPoint = pgm_read_byte(ch->ptr++);
               break;
             case 95: // Stop channel
               ChannelActiveMute = ChannelActiveMute ^ (1 << (n + 4));
@@ -400,7 +380,7 @@ void ATM_playroutine() {
         }
       } while (ch->delay == 0);
 
-      ch->delay--;
+      if (ch->delay != 0xFFFF) ch->delay--;
     }
 
     if (!(ChannelActiveMute & (1 << n))) {
@@ -410,6 +390,25 @@ void ATM_playroutine() {
       } else {
         osc[n].freq = ch->freq;
         osc[n].vol = ch->vol;
+      }
+    }
+    // if all channels are inactive, stop playing or check for repeat
+    
+    if (!(ChannelActiveMute & 0xF0))
+    {
+      byte repeatSong = 0;
+      for (byte j = 0; j < 4; j++) repeatSong += channel[j].repeatPoint;
+      if (repeatSong) {
+        for (byte k = 0; k < 4; k++) {
+          channel[k].ptr = getTrackPointer(channel[k].repeatPoint);
+          channel[k].delay = 0;
+        }
+        ChannelActiveMute = 0b11110000;
+      }
+      else
+      {
+        memset(channel, 0, sizeof(channel));
+        TIMSK4 = 0; // Disable interrupt
       }
     }
   }
