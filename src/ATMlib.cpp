@@ -206,10 +206,8 @@ void ATM_playroutine() {
 
 
     // Apply Arpeggio or Note Cut
-    if (ch->arpNotes) {
-      if  (ch->note) {
-        if ((ch->arpCount & 0x1F) < (ch->arpTiming & 0x1F)) ch->arpCount++;
-      }
+    if (ch->arpNotes && ch->note) {
+      if ((ch->arpCount & 0x1F) < (ch->arpTiming & 0x1F)) ch->arpCount++;
       else {
         if ((ch->arpCount & 0xE0) == 0x00) ch->arpCount = 0x20;
         else if ((ch->arpCount & 0xE0) == 0x20 && !(ch->arpTiming & 0x40) && (ch->arpNotes != 0xFF)) ch->arpCount = 0x40;
