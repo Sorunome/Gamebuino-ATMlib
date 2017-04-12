@@ -325,6 +325,7 @@ void ATM_playroutine() {
               break;
             case 95: // Stop channel
               ChannelActiveMute = ChannelActiveMute ^ (1 << (n + 4));
+              ch->vol = 0;
               ch->delay = 0xFFFF;
               break;
           }
