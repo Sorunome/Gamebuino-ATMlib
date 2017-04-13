@@ -108,6 +108,7 @@ void ATMsynth::play(const byte *song) {
 
   // cleanUp stuff first
   memset(channel, 0, sizeof(channel));
+  ChannelActiveMute = 0b11110000;
 
   // Initializes ATMsynth
   // Sets sample rate and tick rate
@@ -142,6 +143,7 @@ void ATMsynth::play(const byte *song) {
 void ATMsynth::stop() {
   TIMSK4 = 0; // Disable interrupt
   memset(channel, 0, sizeof(channel));
+  ChannelActiveMute = 0b11110000;
 }
 
 // Start grinding samples or Pause playback
@@ -395,6 +397,7 @@ void ATM_playroutine() {
     
     if (!(ChannelActiveMute & 0xF0))
     {
+      Serial.println(sizeof(channel));
       byte repeatSong = 0;
       for (byte j = 0; j < 4; j++) repeatSong += channel[j].repeatPoint;
       if (repeatSong) {
