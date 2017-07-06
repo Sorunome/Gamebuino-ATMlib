@@ -397,7 +397,6 @@ void ATM_playroutine() {
     
     if (!(ChannelActiveMute & 0xF0))
     {
-      Serial.println(sizeof(channel));
       byte repeatSong = 0;
       for (byte j = 0; j < 4; j++) repeatSong += channel[j].repeatPoint;
       if (repeatSong) {
