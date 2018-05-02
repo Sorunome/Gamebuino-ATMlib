@@ -1,6 +1,4 @@
-#include "ATMlib.h"
-
-ATMLIB_CONSTRUCT_ISR(OCR4A)
+#include "Gamebuino-ATMlib.h"
 
 byte trackCount;
 byte tickRate;
@@ -21,7 +19,7 @@ byte ChannelActiveMute = 0b11110000;
 //                         └-------->  7  channel 3 is Active (0 = false / 1 = true)
 
 //Imports
-extern uint16_t cia;
+uint16_t cia;
 
 // Exports
 osc_t osc[4];
@@ -105,6 +103,8 @@ static inline const byte *getTrackPointer(byte track) {
 
 
 void ATMsynth::play(const byte *song) {
+  // TODO: figure out sound
+  return;
 
   // cleanUp stuff first
   memset(channel, 0, sizeof(channel));
@@ -119,13 +119,6 @@ void ATMsynth::play(const byte *song) {
   osc[3].freq = 0x0001; // Seed LFSR
   channel[3].freq = 0x0001; // xFX
 
-  TCCR4A = 0b01000010;    // Fast-PWM 8-bit
-  TCCR4B = 0b00000001;    // 62500Hz
-  OCR4C  = 0xFF;          // Resolution to 8-bit (TOP=0xFF)
-  OCR4A  = 0x80;
-  TIMSK4 = 0b00000100;
-
-
   // Load a melody stream and start grinding samples
   // Read track count
   trackCount = pgm_read_byte(song++);
@@ -137,18 +130,19 @@ void ATMsynth::play(const byte *song) {
   for (unsigned n = 0; n < 4; n++) {
     channel[n].ptr = getTrackPointer(pgm_read_byte(song++));
   }
+  // TODO: start sound
 }
 
 // Stop playing, unload melody
 void ATMsynth::stop() {
-  TIMSK4 = 0; // Disable interrupt
+  // TODO: stop sound
   memset(channel, 0, sizeof(channel));
   ChannelActiveMute = 0b11110000;
 }
 
 // Start grinding samples or Pause playback
 void ATMsynth::playPause() {
-  TIMSK4 = TIMSK4 ^ 0b00000100; // toggle disable/enable interrupt
+  // TODO: toggle play/pause
 }
 
 // Toggle mute on/off on a channel, so it can be used for sound effects
@@ -413,7 +407,7 @@ void ATM_playroutine() {
       else
       {
         memset(channel, 0, sizeof(channel));
-        TIMSK4 = 0; // Disable interrupt
+        //TODO: stop song
       }
     }
   }

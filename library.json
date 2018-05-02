@@ -1,5 +1,5 @@
 {
-    "name": "ATMlib",
+    "name": "Gamebuino-ATMlib",
     "keywords": "arduboy, game, sound, music",
     "description": "A library for playing 4 channel chiptune music and oscilator sounds, intended for use with the Arduboy game system",
     "repository":
@@ -10,5 +10,5 @@
     "version": "1.2.4",
     "exclude": "extras",
     "frameworks": "arduino",
-    "platforms": "atmelavr"
+    "platforms": "samd"
 }
